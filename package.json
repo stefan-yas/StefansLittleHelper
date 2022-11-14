@@ -1,0 +1,29 @@
+{
+  "name": "stefanslittlehelper",
+  "version": "1.0.0",
+  "description": "Telegram bot automating boring tasks",
+  "main": "bot.ts",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stefan-yas/StefansLittleHelper.git"
+  },
+  "keywords": [
+    "telegram",
+    "bot"
+  ],
+  "author": "Stefan Yas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stefan-yas/StefansLittleHelper/issues"
+  },
+  "homepage": "https://github.com/stefan-yas/StefansLittleHelper#readme",
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "grammy": "^1.12.0"
+  }
+}
