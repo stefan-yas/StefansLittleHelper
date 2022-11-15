@@ -1,75 +1,60 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const grammy_1 = require("grammy");
 const token_1 = require("./token");
-// Create an instance of the `Bot` class and pass your authentication token to it.
-const bot = new grammy_1.Bot(`${token_1.token}`);
-//Store bot screaming status
-let screaming = false;
-//This function handles the /scream command
-bot.command("scream", () => {
-    screaming = true;
+const snoowrap = require('snoowrap');
+require('dotenv').config();
+const config = {
+    username: process.env.username,
+    password: process.env.password,
+    clientId: process.env.clientId,
+    clientSecret: process.env.clientSecret,
+    userAgent: process.env.userAgent,
+    refreshToken: process.env.refreshToken,
+    accessToken: process.env.accessToken
+};
+const r = new snoowrap({
+    username: process.env.username,
+    password: process.env.password,
+    clientId: process.env.clientId,
+    clientSecret: process.env.clientSecret,
+    userAgent: process.env.userAgent,
+    refreshToken: process.env.refreshToken,
+    accessToken: process.env.accessToken
 });
-//This function handles /whisper command
-bot.command("whisper", () => {
-    screaming = false;
+const subreddits = ["forhire", "hiring", "jobbit", "jobpostings", "jobs", "jobs4bitcoin", "jobs4crypto", "jobsearch", "jobsfornano", "pythonjobs", "remotejobs", "remotejs", "remotework", "slavelabour", "techjobs"];
+let result = r.getNew().map((post) => post.title).then(function (result) {
+    return result;
 });
-//Pre-assign menu text
-const firstMenu = "<b>Menu 1</b>\n\nA beautiful menu with a shiny inline button.";
-const secondMenu = "<b>Menu 2</b>\n\nA better menu with even more shiny inline buttons.";
-//Pre-assign button text
-const nextButton = "Next";
-const backButton = "Back";
-const tutorialButton = "Tutorial";
-//Build keyboards
-const firstMenuMarkup = new grammy_1.InlineKeyboard().text(nextButton, backButton);
-const secondMenuMarkup = new grammy_1.InlineKeyboard().text(backButton, backButton).text(tutorialButton, "https://core.telegram.org/bots/tutorial");
-//This handler sends a menu with the inline buttons we pre-assigned above
-bot.command("menu", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    yield ctx.reply(firstMenu, {
-        parse_mode: "HTML",
-        reply_markup: firstMenuMarkup,
-    });
-}));
-//This handler processes back button on the menu
-bot.callbackQuery(backButton, (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    //Update message content with corresponding menu section
-    yield ctx.editMessageText(firstMenu, {
-        reply_markup: firstMenuMarkup,
-        parse_mode: "HTML",
-    });
-}));
-//This handler processes next button on the menu
-bot.callbackQuery(nextButton, (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    //Update message content with corresponding menu section
-    yield ctx.editMessageText(secondMenu, {
-        reply_markup: secondMenuMarkup,
-        parse_mode: "HTML",
-    });
-}));
-//This function would be added to the dispatcher as a handler for messages coming from the Bot API
-bot.on("message", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    //Print to console
-    console.log(`${ctx.from.first_name} wrote ${"text" in ctx.message ? ctx.message.text : ""}`);
-    if (screaming && ctx.message.text) {
-        //Scream the message
-        yield ctx.reply(ctx.message.text.toUpperCase(), {
-            entities: ctx.message.entities,
+// let forhire = r.getSubreddit('redditdev').getHot().then((posts: any) => {
+//   return forhire;
+//  })
+let forhire = r.getSubreddit('forhire').getNew({ limit: 25 }).then(function (forhire) {
+    let result = JSON.stringify(forhire);
+    const obj = JSON.parse(result);
+    function getData() {
+        let posts = [];
+        for (let i = 0; i < obj.length; i++) {
+            const title = JSON.stringify(obj[i].title);
+            const url = JSON.stringify(obj[i].url);
+            const post = [title, url];
+            posts.push(post);
+            // console.log(post);
+            // return(JSON.stringify(obj[i].url));
+        }
+        //console.log(posts);
+        const message = "random";
+        posts.forEach(post => {
         });
+        return message;
     }
-    else {
-        //This is equivalent to forwarding, without the sender's name
-        yield ctx.copyMessage(ctx.message.chat.id);
-    }
-}));
-//Start the Bot
-bot.start();
+    console.log(getData());
+    // return getData();
+    postMessage(getData());
+});
+function postMessage(message) {
+    const bot = new grammy_1.Bot(`${token_1.token}`);
+    console.log("line 91" + message);
+    bot.on("message", (ctx) => ctx.reply(message));
+    bot.start();
+}

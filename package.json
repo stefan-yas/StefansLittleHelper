@@ -4,7 +4,8 @@
   "description": "Telegram bot automating boring tasks",
   "main": "bot.ts",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "telegram": "npx tsc && node bot.js"
   },
   "repository": {
     "type": "git",
@@ -21,9 +22,12 @@
   },
   "homepage": "https://github.com/stefan-yas/StefansLittleHelper#readme",
   "devDependencies": {
+    "@types/node": "^18.11.9",
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "grammy": "^1.12.0"
+    "dotenv": "^16.0.3",
+    "grammy": "^1.12.0",
+    "snoowrap": "^1.23.0"
   }
 }
