@@ -1,5 +1,9 @@
-import { Bot } from "grammy";
+import { Bot, Context, Composer } from "grammy";
 import { token } from "./token";
+import { hydrateReply, parseMode, link } from "@grammyjs/parse-mode";
+import type { ParseModeFlavor } from "@grammyjs/parse-mode";
+
+
 
 const snoowrap = require('snoowrap');
 
@@ -51,14 +55,14 @@ let forhire = r.getSubreddit('forhire').getNew({limit: 25}).then(function (forhi
 
       const url = JSON.stringify(obj[i].url);
 
-      const post = [title, url];
+      const post = `${title} \n <a href=${url}>Link to post</a>\n\n`
 
       posts.push(post);
     }
 
-    const message = "random";
-
     posts.forEach(post => { });
+
+    const message = posts.join("\n");
 
     return message;
 
@@ -70,12 +74,19 @@ let forhire = r.getSubreddit('forhire').getNew({limit: 25}).then(function (forhi
 
 });
 
-function postMessage(message: string) {
-  const bot = new Bot(`${token}`);
 
+
+
+function postMessage(message: any) {
+
+  const bot = new Bot<ParseModeFlavor<Context>>(`${token}`);
+  
+  bot.use(hydrateReply);
+  bot.api.config.use(parseMode("replyWithHTML"));
+  
   console.log("line 91" + message);
 
-  bot.on("message", (ctx) => ctx.reply(message));
+  bot.on("message", (ctx) => ctx.replyWithHTML(message));
 
   bot.start();
 }

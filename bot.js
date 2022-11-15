@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const grammy_1 = require("grammy");
 const token_1 = require("./token");
+const parse_mode_1 = require("@grammyjs/parse-mode");
 const snoowrap = require('snoowrap');
 require('dotenv').config();
 const config = {
@@ -26,9 +27,6 @@ const subreddits = ["forhire", "hiring", "jobbit", "jobpostings", "jobs", "jobs4
 let result = r.getNew().map((post) => post.title).then(function (result) {
     return result;
 });
-// let forhire = r.getSubreddit('redditdev').getHot().then((posts: any) => {
-//   return forhire;
-//  })
 let forhire = r.getSubreddit('forhire').getNew({ limit: 25 }).then(function (forhire) {
     let result = JSON.stringify(forhire);
     const obj = JSON.parse(result);
@@ -37,24 +35,21 @@ let forhire = r.getSubreddit('forhire').getNew({ limit: 25 }).then(function (for
         for (let i = 0; i < obj.length; i++) {
             const title = JSON.stringify(obj[i].title);
             const url = JSON.stringify(obj[i].url);
-            const post = [title, url];
+            const post = `${title} \n <a href=${url}>Link to post</a>\n\n`;
             posts.push(post);
-            // console.log(post);
-            // return(JSON.stringify(obj[i].url));
         }
-        //console.log(posts);
-        const message = "random";
-        posts.forEach(post => {
-        });
+        posts.forEach(post => { });
+        const message = posts.join("\n");
         return message;
     }
     console.log(getData());
-    // return getData();
     postMessage(getData());
 });
 function postMessage(message) {
     const bot = new grammy_1.Bot(`${token_1.token}`);
+    bot.use(parse_mode_1.hydrateReply);
+    bot.api.config.use((0, parse_mode_1.parseMode)("replyWithHTML"));
     console.log("line 91" + message);
-    bot.on("message", (ctx) => ctx.reply(message));
+    bot.on("message", (ctx) => ctx.replyWithHTML(message));
     bot.start();
 }

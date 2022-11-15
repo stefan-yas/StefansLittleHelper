@@ -26,6 +26,7 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
+    "@grammyjs/parse-mode": "^1.5.0",
     "dotenv": "^16.0.3",
     "grammy": "^1.12.0",
     "snoowrap": "^1.23.0"
