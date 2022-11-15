@@ -1,9 +1,7 @@
 import { Bot, Context, Composer } from "grammy";
-import { token } from "./token";
+import { userID, token } from "./token";
 import { hydrateReply, parseMode, link } from "@grammyjs/parse-mode";
 import type { ParseModeFlavor } from "@grammyjs/parse-mode";
-
-
 
 const snoowrap = require('snoowrap');
 
@@ -31,62 +29,41 @@ const r = new snoowrap({
   accessToken: process.env.accessToken
 });
 
-
-
 const subreddits = ["forhire", "hiring", "jobbit", "jobpostings", "jobs", "jobs4bitcoin", "jobs4crypto", "jobsearch", "jobsfornano", "pythonjobs", "remotejobs", "remotejs", "remotework", "slavelabour", "techjobs"];
 
-let result = r.getNew().map((post: { title: string; }) => post.title).then(function (result: any) {
-  return result;
-});
-
-let forhire = r.getSubreddit('forhire').getNew({limit: 25}).then(function (forhire: any) {
+r.getSubreddit('forhire').getNew({limit: 25}).then(function (forhire: any) {
   
   let result = JSON.stringify(forhire);
-
   const obj = JSON.parse(result);
 
   function getData() {
-
     let posts = [];
-
     for(let i = 0; i < obj.length; i++) {
 
       const title = JSON.stringify(obj[i].title);
-
       const url = JSON.stringify(obj[i].url);
+      const flairID = JSON.stringify(obj[i].link_flair_template_id);
+      const post = `<pre>👉 ${title}</pre> \n 🔗 <b><a href=${url}>Link to post</a></b>\n_______________________\n\n`;
 
-      const post = `${title} \n <a href=${url}>Link to post</a>\n\n`
-
-      posts.push(post);
+      if (flairID == `"9df7b61e-6597-11e2-92de-12313d051e91"` || flairID ==`"4eaecd0a-6582-11e2-bbfb-12313b088941"`) {
+        posts.push(post);
+      }
     }
 
-    posts.forEach(post => { });
-
     const message = posts.join("\n");
-
     return message;
-
   }
 
-  console.log(getData());
-
   postMessage(getData());
-
 });
 
-
-
-
-function postMessage(message: any) {
+async function postMessage(message: any) {
 
   const bot = new Bot<ParseModeFlavor<Context>>(`${token}`);
   
   bot.use(hydrateReply);
   bot.api.config.use(parseMode("replyWithHTML"));
-  
-  console.log("line 91" + message);
-
+  await bot.api.sendMessage(`${userID}`, `${message}`, { parse_mode: "HTML", disable_web_page_preview: true }, );
   bot.on("message", (ctx) => ctx.replyWithHTML(message));
-
   bot.start();
 }
