@@ -21,9 +21,13 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: npm install, build, and test
+      - name: npm install
         run: |
           npm install
+
+      - name: npm run
+        run: |
+          npm run telegram
       
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
